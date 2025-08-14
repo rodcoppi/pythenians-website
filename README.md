@@ -195,7 +195,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **🌐 Website:** [pythenians-website.vercel.app](https://pythenians-website.vercel.app)
 - **🐦 Twitter:** [@PytheniansNFT](https://x.com/PytheniansNFT)
-- **💬 Discord:** [Join Community](https://discord.com/invite/HJXBDagZTa)
+- **💬 Discord:** [Join Community](https://discord.com/invite/pythnetwork)
 - **🏪 OpenSea:** [View Collection](https://magiceden.io/marketplace/pythenians)
 
 ---
