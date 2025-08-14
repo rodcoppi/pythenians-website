@@ -705,13 +705,20 @@
             window.editingNewsId = null;
             window.removeCurrentImage = false;
             
-            // Hide current image preview and remove button
+            // Reset form
+            document.getElementById('addNewsForm').reset();
+            
+            // Reset image preview and show placeholder
             const imagePreview = document.getElementById('newsPreview');
+            const placeholder = document.querySelector('#newsImageUpload .upload-placeholder');
             const removeBtn = modal.querySelector('.remove-current-image');
             
             if (imagePreview) {
                 imagePreview.style.display = 'none';
                 imagePreview.src = '';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'block';
             }
             if (removeBtn) {
                 removeBtn.style.display = 'none';
