@@ -402,12 +402,14 @@
             }
             
             try {
-                // For now, create a temporary URL. In production, upload to Supabase Storage
-                const mockImageUrl = URL.createObjectURL(imageFile);
+                // Upload image to Supabase Storage
+                console.log('Uploading image to Supabase Storage...');
+                const imageUrl = await db.uploadImage(imageFile);
+                console.log('Image uploaded successfully:', imageUrl);
                 
                 const newMeme = {
                     title: title || 'Untitled Meme',
-                    image_url: mockImageUrl,
+                    image_url: imageUrl,
                     alt_text: title || null
                 };
                 
@@ -455,8 +457,10 @@
                 // Handle image logic
                 let imageUrl = null;
                 if (imageFile) {
-                    // New image uploaded
-                    imageUrl = URL.createObjectURL(imageFile);
+                    // New image uploaded - upload to Supabase Storage
+                    console.log('Uploading news image to Supabase Storage...');
+                    imageUrl = await db.uploadImage(imageFile);
+                    console.log('News image uploaded successfully:', imageUrl);
                 } else if (isEditing) {
                     if (window.removeCurrentImage) {
                         // Image was removed

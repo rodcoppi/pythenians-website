@@ -152,5 +152,57 @@ const db = {
             throw error;
         }
         return true;
+    },
+
+    // Storage functions for image uploads
+    async uploadImage(file, bucket = 'images') {
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `${bucket}/${fileName}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from('images')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                console.error('Error uploading image:', error);
+                throw error;
+            }
+
+            // Get public URL
+            const { data: urlData } = supabaseClient.storage
+                .from('images')
+                .getPublicUrl(filePath);
+
+            return urlData.publicUrl;
+        } catch (error) {
+            console.error('Error in uploadImage:', error);
+            throw error;
+        }
+    },
+
+    async deleteImage(url) {
+        try {
+            // Extract file path from URL
+            const urlParts = url.split('/');
+            const filePath = urlParts.slice(-2).join('/'); // Get last two parts (bucket/filename)
+            
+            const { error } = await supabaseClient.storage
+                .from('images')
+                .remove([filePath]);
+
+            if (error) {
+                console.error('Error deleting image:', error);
+                // Don't throw error for image deletion failures
+            }
+            return true;
+        } catch (error) {
+            console.error('Error in deleteImage:', error);
+            return false;
+        }
     }
 };
