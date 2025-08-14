@@ -3991,6 +3991,164 @@ body {
 }
 
 
+/* Admin Modal Form Spacing Improvements - FORCE OVERRIDE */
+#addNewsModal .form-group {
+    margin-bottom: 20px !important;
+}
+
+#addNewsModal .form-group label {
+    display: block !important;
+    margin-bottom: 8px !important;
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+}
+
+#addNewsModal .checkbox-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 15px !important;
+    margin-bottom: 20px !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    color: var(--text) !important;
+    line-height: 1.4 !important;
+    flex-direction: row !important;
+}
+
+#addNewsModal .checkbox-custom {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 4px !important;
+    border: 2px solid rgba(197, 49, 234, 0.6) !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Adjust modal height and scrolling */
+#addNewsModal .admin-modal {
+    max-height: 85vh !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    padding: 25px !important;
+}
+
+#addNewsModal .admin-modal form {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Fix Quill editor height in modal */
+#addNewsModal #newsContent {
+    height: 250px !important;
+}
+
+/* Custom scrollbar for modal */
+#addNewsModal .admin-modal::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+#addNewsModal .admin-modal::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+}
+
+#addNewsModal .admin-modal::-webkit-scrollbar-thumb {
+    background: rgba(197, 49, 234, 0.6) !important;
+    border-radius: 4px !important;
+}
+
+#addNewsModal .admin-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(197, 49, 234, 0.8) !important;
+}
+
+#addNewsModal input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--highlight) !important;
+    border-color: var(--highlight) !important;
+}
+
+#addNewsModal input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '✓' !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+/* Custom Quill Editor Styles */
+.ql-toolbar.ql-snow {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 2px solid rgba(197, 49, 234, 0.3) !important;
+    border-bottom: 1px solid rgba(197, 49, 234, 0.3) !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.ql-container.ql-snow {
+    border: 2px solid rgba(197, 49, 234, 0.3) !important;
+    border-top: none !important;
+    border-radius: 0 0 8px 8px !important;
+    background: white !important;
+}
+
+.ql-toolbar .ql-stroke {
+    fill: none !important;
+    stroke: #444 !important;
+}
+
+.ql-toolbar .ql-fill {
+    fill: #444 !important;
+    stroke: none !important;
+}
+
+.ql-toolbar .ql-picker {
+    color: #444 !important;
+}
+
+.ql-toolbar button:hover {
+    background: rgba(197, 49, 234, 0.1) !important;
+    border-radius: 4px !important;
+}
+
+.ql-toolbar button.ql-active {
+    background: rgba(197, 49, 234, 0.2) !important;
+    border-radius: 4px !important;
+}
+
+.ql-editor {
+    color: #000 !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    font-family: 'Arial', sans-serif !important;
+}
+
+.ql-editor * {
+    color: #000 !important;
+}
+
+.ql-editor p {
+    color: #000 !important;
+}
+
+.ql-editor h1, .ql-editor h2, .ql-editor h3 {
+    color: #000 !important;
+    font-weight: bold !important;
+}
+
+.ql-editor strong {
+    color: #000 !important;
+    font-weight: bold !important;
+}
+
+.ql-editor.ql-blank::before {
+    color: #666 !important;
+    font-style: italic !important;
+}
+
 /* Media Query for smaller screens */
 /* Mobile Menu Styles */
 .mobile-menu-btn {
