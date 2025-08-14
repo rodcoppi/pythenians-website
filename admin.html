@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythenians Admin Panel</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="login-logo">
+                <h1>Admin Panel</h1>
+                <p>Enter your credentials to access the admin panel</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Email</label>
+                    <input type="email" id="username" name="username" placeholder="admin@pythenians.xyz" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span>🔐</span> Sign In
+                </button>
+            </form>
+            <div class="login-error" id="loginError" style="display: none;">
+                Invalid credentials. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+        <div class="admin-header">
+            <div class="admin-nav">
+                <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="admin-logo">
+                <h1>Admin Panel</h1>
+                <div class="admin-actions">
+                    <button class="admin-btn secondary" onclick="goToSite()">
+                        <span>🌐</span> View Site
+                    </button>
+                    <button class="admin-btn danger" onclick="logout()">
+                        <span>🚪</span> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <!-- Admin Tabs -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('memes')">
+                    <span>🎭</span> Memes
+                </button>
+                <button class="tab-btn" onclick="showTab('news')">
+                    <span>📰</span> News
+                </button>
+            </div>
+
+
+            <!-- Memes Tab -->
+            <div class="tab-content active" id="memes-tab">
+                <div class="content-header">
+                    <h2>Manage Memes</h2>
+                    <button class="admin-btn primary" onclick="showAddMemeModal()">
+                        <span>➕</span> Add New Meme
+                    </button>
+                </div>
+                
+                <div class="content-grid" id="memesGrid">
+                    <!-- Memes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div class="tab-content" id="news-tab">
+                <div class="content-header">
+                    <h2>Manage News</h2>
+                    <button class="admin-btn primary" onclick="showAddNewsModal()">
+                        <span>➕</span> Add New Article
+                    </button>
+                </div>
+                
+                <div class="content-list" id="newsList">
+                    <!-- News articles will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meme Modal -->
+    <div class="modal" id="addMemeModal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeModal('addMemeModal')"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2>Add New Meme</h2>
+                <button class="modal-close" onclick="closeModal('addMemeModal')">×</button>
+            </div>
+            <form class="modal-body" id="addMemeForm">
+                <div class="form-group">
+                    <label for="memeImage">Meme Image</label>
+                    <div class="image-upload" id="memeImageUpload">
+                        <input type="file" id="memeImage" accept="image/*" onchange="previewImage(this, 'memePreview')">
+                        <div class="upload-placeholder">
+                            <span>📷</span>
+                            <p>Click to upload image</p>
+                        </div>
+                        <img id="memePreview" class="image-preview" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="memeTitle">Title (Optional)</label>
+                    <input type="text" id="memeTitle" placeholder="Enter meme title...">
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="admin-btn secondary" onclick="closeModal('addMemeModal')">Cancel</button>
+                <button class="admin-btn primary" onclick="addMeme()">Add Meme</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add News Modal -->
+    <div class="modal" id="addNewsModal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeModal('addNewsModal')"></div>
+        <div class="modal-dialog large">
+            <div class="modal-header">
+                <h2>Add New Article</h2>
+                <button class="modal-close" onclick="closeModal('addNewsModal')">×</button>
+            </div>
+            <form class="modal-body" id="addNewsForm">
+                <div class="form-group">
+                    <label for="newsImage">Featured Image</label>
+                    <div class="image-upload" id="newsImageUpload">
+                        <input type="file" id="newsImage" accept="image/*" onchange="previewImage(this, 'newsPreview')">
+                        <div class="upload-placeholder">
+                            <span>🖼️</span>
+                            <p>Click to upload featured image</p>
+                        </div>
+                        <img id="newsPreview" class="image-preview" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="newsTitle">Article Title</label>
+                    <input type="text" id="newsTitle" placeholder="Enter article title..." required>
+                </div>
+                <div class="form-group">
+                    <label for="newsContent">Article Content</label>
+                    <textarea id="newsContent" rows="12" placeholder="Write your article content here..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="newsPublished" checked>
+                        <span class="checkbox-custom"></span>
+                        Publish immediately
+                    </label>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="admin-btn secondary" onclick="closeModal('addNewsModal')">Cancel</button>
+                <button class="admin-btn primary" onclick="addNews()">Save Article</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock credentials (in production, this would be handled by Supabase Auth)
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'pythenians2024'
+        };
+
+        let currentTab = 'memes';
+        let mockMemes = [];
+        let mockNews = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if already authenticated with Supabase
+            try {
+                const user = await auth.getUser();
+                if (user && localStorage.getItem('pythAdminAuth') === 'true') {
+                    showDashboard();
+                } else {
+                    // Clear localStorage if not authenticated
+                    localStorage.removeItem('pythAdminAuth');
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+                localStorage.removeItem('pythAdminAuth');
+            }
+        });
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showLoginError('Please enter both email and password');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Signing in...';
+                submitBtn.disabled = true;
+
+                await auth.signIn(email, password);
+                localStorage.setItem('pythAdminAuth', 'true');
+                showDashboard();
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError('Invalid credentials. Please check your email and password.');
+            } finally {
+                // Reset button state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Login';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function showDashboard() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadMemes();
+        }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error('Error signing out:', error);
+            } finally {
+                localStorage.removeItem('pythAdminAuth');
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('adminDashboard').style.display = 'none';
+            }
+        }
+
+        function goToSite() {
+            window.open('index.html', '_blank');
+        }
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Load tab-specific data
+            if (tabName === 'memes') {
+                loadMemes();
+            } else if (tabName === 'news') {
+                loadNews();
+            }
+        }
+
+
+        function loadMemes() {
+            const grid = document.getElementById('memesGrid');
+            if (mockMemes.length === 0) {
+                grid.innerHTML = '<div class="empty-content">No memes yet. Add your first meme!</div>';
+                return;
+            }
+            
+            grid.innerHTML = mockMemes.map(meme => `
+                <div class="content-card">
+                    <img src="${meme.image_url}" alt="Meme">
+                    <div class="card-actions">
+                        <button class="action-btn danger" onclick="deleteMeme('${meme.id}')">🗑️</button>
+                    </div>
+                    <div class="card-info">
+                        <p>${meme.title || 'Untitled'}</p>
+                        <span>${formatDate(meme.created_at)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadNews() {
+            const list = document.getElementById('newsList');
+            if (mockNews.length === 0) {
+                list.innerHTML = '<div class="empty-content">No articles yet. Write your first article!</div>';
+                return;
+            }
+            
+            list.innerHTML = mockNews.map(article => `
+                <div class="news-item">
+                    <img src="${article.image_url}" alt="Article">
+                    <div class="news-item-content">
+                        <h3>${article.title}</h3>
+                        <p>${article.content.substring(0, 100)}...</p>
+                        <div class="news-item-meta">
+                            <span class="status ${article.published ? 'published' : 'draft'}">
+                                ${article.published ? '✅ Published' : '📝 Draft'}
+                            </span>
+                            <span>${formatDate(article.created_at)}</span>
+                        </div>
+                    </div>
+                    <div class="news-item-actions">
+                        <button class="action-btn ${article.published ? 'warning' : 'success'}" onclick="togglePublishStatus('${article.id}')" title="${article.published ? 'Unpublish' : 'Publish'}">${article.published ? '📤' : '📥'}</button>
+                        <button class="action-btn secondary" onclick="editNews('${article.id}')" title="Edit">✏️</button>
+                        <button class="action-btn danger" onclick="deleteNews('${article.id}')" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal functions
+        function showAddMemeModal() {
+            document.getElementById('addMemeModal').style.display = 'flex';
+        }
+
+        function showAddNewsModal() {
+            resetNewsModal(); // Reset to add mode
+            document.getElementById('addNewsModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Reset forms
+            document.querySelectorAll(`#${modalId} form`).forEach(form => form.reset());
+            document.querySelectorAll('.image-preview').forEach(img => {
+                img.style.display = 'none';
+                img.src = '';
+            });
+            
+            // Reset news modal if closing news modal
+            if (modalId === 'addNewsModal') {
+                resetNewsModal();
+            }
+        }
+
+        function previewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    input.parentElement.querySelector('.upload-placeholder').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function addMeme() {
+            console.log('addMeme function called');
+            
+            const imageFile = document.getElementById('memeImage').files[0];
+            const title = document.getElementById('memeTitle').value;
+            
+            console.log('Meme form data:', { imageFile, title });
+            
+            if (!imageFile) {
+                alert('Please select an image');
+                return;
+            }
+            
+            try {
+                // For now, create a temporary URL. In production, upload to Supabase Storage
+                const mockImageUrl = URL.createObjectURL(imageFile);
+                
+                const newMeme = {
+                    title: title || 'Untitled Meme',
+                    image_url: mockImageUrl,
+                    alt_text: title || null
+                };
+                
+                console.log('Meme data to save:', newMeme);
+                
+                const addedMeme = await db.addMeme(newMeme);
+                console.log('Added meme:', addedMeme);
+                
+                mockMemes.unshift(addedMeme);
+                
+                document.getElementById('addMemeForm').reset();
+                closeModal('addMemeModal');
+                
+                if (currentTab === 'memes') {
+                    loadMemes();
+                }
+                
+                alert('Meme added successfully!');
+            } catch (error) {
+                console.error('Error adding meme:', error);
+                console.error('Error details:', error.message);
+                console.error('Error stack:', error.stack);
+                alert('Error adding meme: ' + error.message);
+            }
+        }
+
+        async function addNews() {
+            console.log('addNews function called');
+            console.log('editingNewsId:', window.editingNewsId);
+            
+            const imageFile = document.getElementById('newsImage').files[0];
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+            const published = document.getElementById('newsPublished').checked;
+            const isEditing = window.editingNewsId;
+            
+            console.log('Form data:', { title, content, published, isEditing });
+            
+            if (!title || !content) {
+                alert('Please fill in title and content');
+                return;
+            }
+            
+            try {
+                // Handle image logic
+                let imageUrl = null;
+                if (imageFile) {
+                    // New image uploaded
+                    imageUrl = URL.createObjectURL(imageFile);
+                } else if (isEditing) {
+                    if (window.removeCurrentImage) {
+                        // Image was removed
+                        imageUrl = null;
+                    } else {
+                        // Keep existing image
+                        const existingArticle = mockNews.find(n => n.id === isEditing);
+                        imageUrl = existingArticle?.image_url;
+                    }
+                }
+                
+                const articleData = {
+                    title: title,
+                    content: content,
+                    excerpt: content.substring(0, 150) + (content.length > 150 ? '...' : ''),
+                    image_url: imageUrl,
+                    published: published
+                };
+                
+                console.log('Article data to save:', articleData);
+                
+                if (isEditing) {
+                    // Update existing article
+                    console.log('Updating article with ID:', isEditing);
+                    const updatedArticle = await db.updateNews(isEditing, articleData);
+                    console.log('Updated article:', updatedArticle);
+                    
+                    const index = mockNews.findIndex(n => n.id === isEditing);
+                    if (index > -1) {
+                        mockNews[index] = { ...mockNews[index], ...updatedArticle };
+                    }
+                    alert('News article updated successfully!');
+                } else {
+                    // Create new article
+                    console.log('Creating new article');
+                    const addedArticle = await db.addNews(articleData);
+                    console.log('Added article:', addedArticle);
+                    mockNews.unshift(addedArticle);
+                    alert('News article added successfully!');
+                }
+                
+                // Reset form and modal
+                document.getElementById('addNewsForm').reset();
+                resetNewsModal();
+                closeModal('addNewsModal');
+                
+                if (currentTab === 'news') {
+                    loadNews();
+                }
+                
+            } catch (error) {
+                console.error('Error saving news:', error);
+                alert(`Error ${isEditing ? 'updating' : 'adding'} news article. Please try again.`);
+            }
+        }
+
+        async function deleteMeme(id) {
+            console.log('Attempting to delete meme with ID:', id);
+            console.log('Type of ID:', typeof id);
+            console.log('Current memes array:', mockMemes);
+            
+            if (confirm('Are you sure you want to delete this meme?')) {
+                try {
+                    await db.deleteMeme(id);
+                    const index = mockMemes.findIndex(meme => meme.id === id);
+                    console.log('Found meme at index:', index);
+                    
+                    if (index > -1) {
+                        mockMemes.splice(index, 1);
+                    }
+                    loadMemes();
+                    alert('Meme deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting meme:', error);
+                    console.error('Error details:', error.message);
+                    alert('Error deleting meme: ' + error.message);
+                }
+            }
+        }
+
+        async function deleteNews(id) {
+            if (confirm('Are you sure you want to delete this article?')) {
+                try {
+                    await db.deleteNews(id);
+                    const index = mockNews.findIndex(article => article.id === id);
+                    if (index > -1) {
+                        mockNews.splice(index, 1);
+                    }
+                    loadNews();
+                    alert('Article deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting article:', error);
+                    alert('Error deleting article. Please try again.');
+                }
+            }
+        }
+
+        function editNews(id) {
+            console.log('Editing news with ID:', id);
+            console.log('Current news array:', mockNews);
+            
+            const article = mockNews.find(n => n.id === id);
+            if (!article) {
+                console.error('Article not found for ID:', id);
+                alert('Article not found');
+                return;
+            }
+
+            console.log('Found article:', article);
+
+            // Get modal elements first
+            const modal = document.getElementById('addNewsModal');
+            const modalTitle = modal.querySelector('h2');
+            const saveBtn = modal.querySelector('.admin-btn.primary');
+
+            // Fill the form with existing data
+            document.getElementById('newsTitle').value = article.title;
+            document.getElementById('newsContent').value = article.content;
+            document.getElementById('newsPublished').checked = article.published;
+            
+            // Show current image if exists
+            const imagePreview = document.getElementById('newsPreview');
+            const imageUpload = document.getElementById('newsImageUpload');
+            
+            console.log('Image elements found:', { imagePreview, imageUpload });
+            
+            if (imagePreview && article.image_url) {
+                imagePreview.src = article.image_url;
+                imagePreview.style.display = 'block';
+                
+                // Add remove button if not exists
+                let removeBtn = modal.querySelector('.remove-current-image');
+                if (!removeBtn && imageUpload) {
+                    removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'remove-current-image admin-btn danger';
+                    removeBtn.innerHTML = '🗑️ Remove Current Image';
+                    removeBtn.onclick = function() {
+                        if (imagePreview) {
+                            imagePreview.style.display = 'none';
+                            imagePreview.src = '';
+                        }
+                        window.removeCurrentImage = true;
+                        removeBtn.style.display = 'none';
+                    };
+                    imageUpload.parentNode.appendChild(removeBtn);
+                }
+                if (removeBtn) removeBtn.style.display = 'inline-block';
+                window.removeCurrentImage = false;
+            } else {
+                if (imagePreview) imagePreview.style.display = 'none';
+                const removeBtn = modal.querySelector('.remove-current-image');
+                if (removeBtn) removeBtn.style.display = 'none';
+            }
+
+            // Change modal title and button text
+            console.log('Modal elements found:', { modalTitle, saveBtn });
+            
+            if (modalTitle) modalTitle.textContent = 'Edit News Article';
+            if (saveBtn) saveBtn.textContent = 'Update Article';
+            
+            // Store the editing ID
+            window.editingNewsId = id;
+            console.log('Set editing ID to:', window.editingNewsId);
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-socials">
+                <a href="https://x.com/PytheniansNFT" target="_blank" class="social-link">
+                    <span>𝕏</span>
+                </a>
+                <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="social-link">
+                    <img src="./disc-logo.png" alt="Discord" class="social-logo">
+                </a>
+            </div>
+            <p class="footer-text">© 2024 Pythenians NFT Collection</p>
+        </div>
+    </footer>
+
+    <!-- Supabase Integration -->
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // Replace mock data with Supabase data
+        let originalMockMemes = [...mockMemes];
+        let originalMockNews = [...mockNews];
+
+        // Load data from Supabase on page load
+        async function initializeData() {
+            try {
+                const [memesData, newsData] = await Promise.all([
+                    db.getMemes(),
+                    db.getNews()
+                ]);
+                
+                mockMemes.length = 0;
+                mockMemes.push(...memesData);
+                
+                mockNews.length = 0;
+                mockNews.push(...newsData);
+                
+                if (currentTab === 'memes') {
+                    loadMemes();
+                } else if (currentTab === 'news') {
+                    loadNews();
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // Fallback to original mock data
+                mockMemes.length = 0;
+                mockMemes.push(...originalMockMemes);
+                mockNews.length = 0;
+                mockNews.push(...originalMockNews);
+                alert('Error connecting to database. Using offline mode.');
+            }
+        }
+
+
+
+        // Function to reset modal to add mode
+        function resetNewsModal() {
+            const modal = document.getElementById('addNewsModal');
+            const modalTitle = modal.querySelector('h2');
+            const saveBtn = modal.querySelector('.admin-btn.primary');
+            
+            modalTitle.textContent = 'Add New Article';
+            saveBtn.textContent = 'Save Article';
+            window.editingNewsId = null;
+            window.removeCurrentImage = false;
+            
+            // Hide current image preview and remove button
+            const imagePreview = document.getElementById('newsPreview');
+            const removeBtn = modal.querySelector('.remove-current-image');
+            
+            if (imagePreview) {
+                imagePreview.style.display = 'none';
+                imagePreview.src = '';
+            }
+            if (removeBtn) {
+                removeBtn.style.display = 'none';
+            }
+        }
+
+        // Toggle publish status
+        window.togglePublishStatus = async function(id) {
+            try {
+                const article = mockNews.find(n => n.id === id);
+                if (!article) return;
+                
+                const newStatus = !article.published;
+                await db.updateNews(id, { published: newStatus });
+                
+                article.published = newStatus;
+                loadNews();
+                
+                alert(`Article ${newStatus ? 'published' : 'unpublished'} successfully!`);
+            } catch (error) {
+                console.error('Error updating article:', error);
+                alert('Error updating article status. Please try again.');
+            }
+        };
+
+        // Initialize data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for the original scripts to load
+            setTimeout(initializeData, 500);
+        });
+    </script>
+</body>
+</html>

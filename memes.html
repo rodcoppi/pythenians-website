@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythenians Memes</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html">
+            <img class="logo" src="https://pythenians.xyz/logo.png" alt="Pythenians Logo">
+        </a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="nav desktop-nav">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="memes.html">Memes</a>
+            <a href="news.html">News</a>
+            <a href="https://magiceden.io/marketplace/pythenians" target="_blank">Buy</a>
+        </nav>
+        
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="mobile-menu-logo">
+                <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
+            </div>
+            <nav class="mobile-nav">
+                <a href="index.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Home</span>
+                </a>
+                <a href="gallery.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Gallery</span>
+                </a>
+                <a href="memes.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Memes</span>
+                </a>
+                <a href="news.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">News</span>
+                </a>
+                <a href="https://magiceden.io/marketplace/pythenians" target="_blank" onclick="closeMobileMenu()">
+                    <span class="nav-text">Buy</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        function closeMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+
+    <div class="page-container">
+        <!-- Header Section -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Community Memes</h1>
+                <p class="page-subtitle">The funniest Pythenians content from our community</p>
+                <div class="header-decoration"></div>
+            </div>
+        </div>
+
+        <!-- Memes Grid -->
+        <div class="memes-container">
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Loading epic memes...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🎭</div>
+                <h3>No memes yet</h3>
+                <p>Be the first to share a meme with the community!</p>
+            </div>
+
+            <!-- Memes Grid -->
+            <div class="memes-grid" id="memesGrid" style="display: none;">
+                <!-- Memes will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for viewing memes -->
+    <div class="meme-lightbox" id="memeLightbox" style="display: none;">
+        <div class="lightbox-backdrop" onclick="closeMemeModal()"></div>
+        <button class="lightbox-close" onclick="closeMemeModal()">×</button>
+        <div class="lightbox-wrapper">
+            <div class="lightbox-content">
+                <div class="lightbox-image-container">
+                    <img id="lightboxImage" src="" alt="Meme">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMemes = [];
+
+        // Mock data for testing (replace with Supabase later)
+        const mockMemes = [
+            {
+                id: 1,
+                image_url: "https://picsum.photos/300/400?random=1",
+                created_at: "2024-01-15T10:30:00Z",
+                title: "When you find a rare Pythenian"
+            },
+            {
+                id: 2,
+                image_url: "https://picsum.photos/300/500?random=2",
+                created_at: "2024-01-14T15:45:00Z",
+                title: "Me checking floor price"
+            },
+            {
+                id: 3,
+                image_url: "https://picsum.photos/300/350?random=3",
+                created_at: "2024-01-13T09:20:00Z",
+                title: "Diamond hands forever"
+            },
+            {
+                id: 4,
+                image_url: "https://picsum.photos/300/450?random=4",
+                created_at: "2024-01-12T18:10:00Z",
+                title: "Community vibes"
+            }
+        ];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMemes();
+        });
+
+        async function loadMemes() {
+            try {
+                const loadingState = document.getElementById('loadingState');
+                const emptyState = document.getElementById('emptyState');
+                const memesGrid = document.getElementById('memesGrid');
+
+                // Show loading state
+                loadingState.style.display = 'flex';
+                emptyState.style.display = 'none';
+                memesGrid.style.display = 'none';
+
+                // Simulate loading time
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Fetch memes from Supabase
+                const memes = await fetchMemesFromSupabase();
+
+                currentMemes = memes;
+
+                if (memes.length === 0) {
+                    loadingState.style.display = 'none';
+                    emptyState.style.display = 'flex';
+                } else {
+                    await renderMemes(memes);
+                    loadingState.style.display = 'none';
+                    memesGrid.style.display = 'grid';
+                }
+            } catch (error) {
+                console.error('Error loading memes:', error);
+                document.getElementById('loadingState').innerHTML = 
+                    '<div class="error-state"><h3>Failed to load memes</h3><p>Please try again later</p></div>';
+            }
+        }
+
+        async function renderMemes(memes) {
+            const grid = document.getElementById('memesGrid');
+            grid.innerHTML = '';
+
+            // Preload all images first
+            const imagePromises = memes.map(meme => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve({ meme, img });
+                    img.onerror = () => resolve({ meme, img }); // Resolve even on error
+                    img.src = meme.image_url;
+                });
+            });
+
+            // Wait for all images to load, then show them
+            const loadedImages = await Promise.all(imagePromises);
+
+            loadedImages.forEach(({ meme, img }, index) => {
+                const memeElement = document.createElement('div');
+                memeElement.className = 'meme-item';
+                memeElement.style.animationDelay = `${index * 0.1}s`;
+
+                memeElement.innerHTML = `
+                    <div class="meme-image-container" onclick="openMemeModal('${meme.id}')">
+                        <img src="${meme.image_url}" alt="${meme.title || 'Meme'}">
+                    </div>
+                `;
+
+                grid.appendChild(memeElement);
+            });
+
+            // Apply masonry layout after images are loaded
+            setTimeout(() => {
+                initMasonry();
+            }, 100);
+        }
+
+        function initMasonry() {
+            const grid = document.getElementById('memesGrid');
+            const items = grid.querySelectorAll('.meme-item');
+            const columnCount = window.innerWidth > 1200 ? 4 : window.innerWidth > 768 ? 3 : 2;
+            const gap = 24;
+            
+            // Calculate column width
+            const gridWidth = grid.offsetWidth;
+            const columnWidth = (gridWidth - (gap * (columnCount - 1))) / columnCount;
+            
+            // Initialize column heights
+            const columnHeights = new Array(columnCount).fill(0);
+            
+            items.forEach((item, index) => {
+                // Find shortest column
+                const shortestColumn = columnHeights.indexOf(Math.min(...columnHeights));
+                
+                // Position item
+                const x = shortestColumn * (columnWidth + gap);
+                const y = columnHeights[shortestColumn];
+                
+                item.style.left = `${x}px`;
+                item.style.top = `${y}px`;
+                item.style.width = `${columnWidth}px`;
+                
+                // Update column height
+                columnHeights[shortestColumn] += item.offsetHeight + gap;
+            });
+            
+            // Set container height
+            grid.style.height = `${Math.max(...columnHeights)}px`;
+        }
+
+        // Recalculate on window resize
+        window.addEventListener('resize', () => {
+            if (document.getElementById('memesGrid').children.length > 0) {
+                initMasonry();
+            }
+        });
+
+        function openMemeModal(memeId) {
+            console.log('Opening meme modal for ID:', memeId);
+            console.log('Type of ID:', typeof memeId);
+            console.log('Current memes array:', currentMemes);
+            
+            const meme = currentMemes.find(m => m.id === memeId);
+            console.log('Found meme:', meme);
+            
+            if (!meme) {
+                console.error('Meme not found for ID:', memeId);
+                return;
+            }
+
+            const lightboxImage = document.getElementById('lightboxImage');
+            const lightbox = document.getElementById('memeLightbox');
+            
+            // Show lightbox with loading state
+            lightbox.style.display = 'flex';
+            lightboxImage.style.opacity = '0';
+            document.body.style.overflow = 'hidden';
+            
+            // Create new image to preload
+            const img = new Image();
+            img.onload = function() {
+                lightboxImage.src = this.src;
+                lightboxImage.style.transition = 'opacity 0.3s ease';
+                lightboxImage.style.opacity = '1';
+            };
+            img.src = meme.image_url;
+        }
+
+        function closeMemeModal() {
+            document.getElementById('memeLightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function downloadMeme() {
+            const img = document.getElementById('lightboxImage');
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'pythenians-meme.jpg';
+            link.click();
+        }
+
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMemeModal();
+            }
+        });
+
+        // Supabase integration
+        async function fetchMemesFromSupabase() {
+            try {
+                // If no Supabase config, fallback to mock data
+                if (typeof supabase === 'undefined') {
+                    console.log('Supabase not available, using mock data');
+                    return mockMemes;
+                }
+
+                const { createClient } = supabase;
+                const supabaseClient = createClient(
+                    'https://tbyxrsbtvoxiahdptemv.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRieXhyc2J0dm94aWFoZHB0ZW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDU2MzQsImV4cCI6MjA3MDcyMTYzNH0.-x-GiAwRc-uxuWg_RrBbACtuQHZE0WuhTLT8sXfpsAM'
+                );
+
+                const { data, error } = await supabaseClient
+                    .from('memes')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching memes from Supabase:', error);
+                    return mockMemes;
+                }
+
+                console.log('Fetched memes from Supabase:', data);
+                return data || [];
+            } catch (error) {
+                console.error('Error connecting to Supabase:', error);
+                return mockMemes;
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-socials">
+                <a href="https://x.com/PytheniansNFT" target="_blank" class="social-link">
+                    <span>𝕏</span>
+                </a>
+                <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="social-link">
+                    <img src="./disc-logo.png" alt="Discord" class="social-logo">
+                </a>
+            </div>
+            <p class="footer-text">© 2024 Pythenians NFT Collection</p>
+        </div>
+    </footer>
+</body>
+</html>

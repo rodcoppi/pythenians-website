@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythenians News</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html">
+            <img class="logo" src="https://pythenians.xyz/logo.png" alt="Pythenians Logo">
+        </a>
+        
+        <!-- Desktop Navigation -->
+        <nav class="nav desktop-nav">
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="memes.html">Memes</a>
+            <a href="news.html">News</a>
+            <a href="https://magiceden.io/marketplace/pythenians" target="_blank">Buy</a>
+        </nav>
+        
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()">
+        <div class="mobile-menu">
+            <div class="mobile-menu-header">
+                <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="mobile-menu-logo">
+                <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
+            </div>
+            <nav class="mobile-nav">
+                <a href="index.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Home</span>
+                </a>
+                <a href="gallery.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Gallery</span>
+                </a>
+                <a href="memes.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">Memes</span>
+                </a>
+                <a href="news.html" onclick="closeMobileMenu()">
+                    <span class="nav-text">News</span>
+                </a>
+                <a href="https://magiceden.io/marketplace/pythenians" target="_blank" onclick="closeMobileMenu()">
+                    <span class="nav-text">Buy</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        function closeMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Supabase integration
+        async function fetchPublishedNewsFromSupabase() {
+            try {
+                // If no Supabase config, fallback to mock data
+                if (typeof supabase === 'undefined') {
+                    console.log('Supabase not available, using mock data');
+                    return mockNews.filter(article => article.published);
+                }
+
+                const { createClient } = supabase;
+                const supabaseClient = createClient(
+                    'https://tbyxrsbtvoxiahdptemv.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRieXhyc2J0dm94aWFoZHB0ZW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNDU2MzQsImV4cCI6MjA3MDcyMTYzNH0.-x-GiAwRc-uxuWg_RrBbACtuQHZE0WuhTLT8sXfpsAM'
+                );
+
+                const { data, error } = await supabaseClient
+                    .from('news')
+                    .select('*')
+                    .eq('published', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching news from Supabase:', error);
+                    return mockNews.filter(article => article.published);
+                }
+
+                console.log('Fetched news from Supabase:', data);
+                return data || [];
+            } catch (error) {
+                console.error('Error connecting to Supabase:', error);
+                return mockNews.filter(article => article.published);
+            }
+        }
+    </script>
+
+    <div class="page-container">
+        <!-- Header Section -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">Pythenians News</h1>
+                <p class="page-subtitle">Stay updated with the latest community announcements and updates</p>
+                <div class="header-decoration"></div>
+            </div>
+        </div>
+
+        <!-- News Content -->
+        <div class="news-container">
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Loading latest news...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">📰</div>
+                <h3>No news yet</h3>
+                <p>Stay tuned for exciting updates from the Pythenians community!</p>
+            </div>
+
+            <!-- News Grid -->
+            <div class="news-grid" id="newsGrid" style="display: none;">
+                <!-- News articles will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="article-modal" id="articleModal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeArticleModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeArticleModal()">×</button>
+            <div class="article-container">
+                <div class="article-header">
+                    <img id="modalImage" src="" alt="Article image" class="article-image">
+                    <div class="article-meta">
+                        <h1 id="modalTitle" class="article-title"></h1>
+                        <div class="article-date" id="modalDate"></div>
+                    </div>
+                </div>
+                <div class="article-content">
+                    <div id="modalContent" class="article-text"></div>
+                </div>
+                <div class="article-footer">
+                    <div class="article-actions">
+                        <button class="share-btn" onclick="shareOnX()">
+                            <span>𝕏</span> Share on X
+                        </button>
+                        <button class="copy-btn" onclick="copyArticleLink()">
+                            <span>🔗</span> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentNews = [];
+
+        // Mock data for testing (replace with Supabase later)
+        const mockNews = [
+            {
+                id: 1,
+                title: "Pythenians Floor Price Reaches New All-Time High",
+                content: "The Pythenians NFT collection has reached a new milestone today as the floor price surged to unprecedented levels. This remarkable achievement reflects the growing confidence in our community and the unique value proposition of our collection.\n\nThe surge can be attributed to several factors including increased utility announcements, growing community engagement, and recent partnerships with major Web3 platforms. Our roadmap continues to deliver on promises, building trust and value for holders.\n\nWe're excited to see where this momentum takes us next. Thank you to all our holders for their continued support and belief in the Pythenians vision.",
+                image_url: "https://picsum.photos/800/400?random=1",
+                created_at: "2024-01-15T14:30:00Z",
+                published: true
+            },
+            {
+                id: 2,
+                title: "New Utility Features Coming to Pythenians Ecosystem",
+                content: "We're thrilled to announce several exciting new utility features coming to the Pythenians ecosystem in Q1 2024. These features will provide additional value and engagement opportunities for our community.\n\nUpcoming features include:\n• Exclusive holder-only Discord channels\n• NFT staking rewards program\n• Access to premium community events\n• Early access to future drops\n• Governance voting rights on major decisions\n\nOur development team has been working tirelessly to ensure these features provide real value to our holders. We believe these additions will significantly enhance the overall Pythenians experience and strengthen our community bonds.\n\nMore details and exact launch dates will be announced in the coming weeks. Stay tuned to our official channels for updates.",
+                image_url: "https://picsum.photos/800/400?random=2",
+                created_at: "2024-01-14T09:15:00Z",
+                published: true
+            },
+            {
+                id: 3,
+                title: "Community Spotlight: Amazing Fan Art Submissions",
+                content: "This month we received incredible fan art submissions from our talented community members. The creativity and passion displayed in these works truly showcase the artistic spirit of Pythenians.\n\nHighlighted artists include @PythArtist_X with their stunning digital painting series, @CryptoCanvas with their unique 3D renders, and @PixelPyth with their retro-style interpretations.\n\nWe're planning to feature community art more prominently across our platforms and are exploring ways to reward talented community artists. If you're an artist in our community, we encourage you to share your Pythenians-inspired creations.\n\nThank you to all artists who contribute to making our community more vibrant and creative!",
+                image_url: "https://picsum.photos/800/400?random=3",
+                created_at: "2024-01-12T16:45:00Z",
+                published: true
+            },
+            {
+                id: 4,
+                title: "Partnership Announcement: Collaboration with Major DeFi Platform",
+                content: "We're excited to announce our strategic partnership with a leading DeFi platform that will bring enhanced utility to Pythenians holders.\n\nThis collaboration will introduce:\n• Exclusive yield farming opportunities\n• NFT-backed lending and borrowing\n• Access to premium DeFi products\n• Special trading fee discounts\n• Priority access to new protocol features\n\nThe integration is expected to go live in February 2024, pending final security audits and testing. This partnership represents a significant step in our mission to provide real-world utility for our NFTs.\n\nWe'll be hosting an AMA session next week to discuss the details and answer community questions about this exciting development.",
+                image_url: "https://picsum.photos/800/400?random=4",
+                created_at: "2024-01-10T11:20:00Z",
+                published: true
+            },
+            {
+                id: 5,
+                title: "Important Community Update: New Roadmap Released",
+                content: "We're thrilled to share our updated roadmap for 2024, which includes exciting new features and community initiatives that will take Pythenians to the next level.\n\nKey highlights from our new roadmap:\n• Q1: Enhanced staking rewards system\n• Q2: Mobile app launch with exclusive features\n• Q3: Community governance implementation\n• Q4: Major utility expansion and partnerships\n\nOur team has been working closely with community feedback to ensure these developments align with what our holders want most. Each milestone has been carefully planned with realistic timelines and clear deliverables.\n\nWe believe this roadmap positions Pythenians as a leader in utility-focused NFT projects. Thank you for your continued support as we build the future together!",
+                image_url: "",
+                created_at: "2024-01-08T14:30:00Z",
+                published: true
+            }
+        ];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNews();
+        });
+
+        async function loadNews() {
+            try {
+                const loadingState = document.getElementById('loadingState');
+                const emptyState = document.getElementById('emptyState');
+                const newsGrid = document.getElementById('newsGrid');
+
+                // Show loading state
+                loadingState.style.display = 'flex';
+                emptyState.style.display = 'none';
+                newsGrid.style.display = 'none';
+
+                // Simulate loading time
+                await new Promise(resolve => setTimeout(resolve, 1200));
+
+                // In the future, replace this with: const news = await fetchNewsFromSupabase();
+                const news = await fetchPublishedNewsFromSupabase();
+
+                currentNews = news;
+
+                if (news.length === 0) {
+                    loadingState.style.display = 'none';
+                    emptyState.style.display = 'flex';
+                } else {
+                    renderNews(news);
+                    loadingState.style.display = 'none';
+                    newsGrid.style.display = 'grid';
+                }
+            } catch (error) {
+                console.error('Error loading news:', error);
+                document.getElementById('loadingState').innerHTML = 
+                    '<div class="error-state"><h3>Failed to load news</h3><p>Please try again later</p></div>';
+            }
+        }
+
+        function renderNews(articles) {
+            const grid = document.getElementById('newsGrid');
+            grid.innerHTML = '';
+
+            articles.forEach((article, index) => {
+                const newsElement = document.createElement('div');
+                newsElement.className = 'news-card';
+                newsElement.style.animationDelay = `${index * 0.15}s`;
+
+                const preview = article.content.substring(0, 150) + '...';
+
+                const hasImage = article.image_url && article.image_url.trim() !== '';
+                
+                if (hasImage) {
+                    newsElement.innerHTML = `
+                        <div class="news-image-container">
+                            <img src="${article.image_url}" alt="${article.title}" loading="lazy">
+                            <div class="news-overlay">
+                                <button class="read-more-btn" onclick="openArticleModal('${article.id}')">
+                                    <span>📖</span> Read Article
+                                </button>
+                            </div>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span class="news-date">${formatDate(article.created_at)}</span>
+                            </div>
+                            <h2 class="news-title">${article.title}</h2>
+                            <p class="news-preview">${preview}</p>
+                            <button class="read-more-link" onclick="openArticleModal(${article.id})">
+                                Read Full Article →
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    newsElement.classList.add('news-no-image');
+                    newsElement.innerHTML = `
+                        <div class="news-content-full">
+                            <div class="news-meta">
+                                <span class="news-date">${formatDate(article.created_at)}</span>
+                            </div>
+                            <h2 class="news-title">${article.title}</h2>
+                            <p class="news-preview-large">${preview}</p>
+                            <div class="news-actions">
+                                <button class="read-more-btn-large" onclick="openArticleModal(${article.id})">
+                                    <span>📖</span> Read Full Article
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                grid.appendChild(newsElement);
+            });
+        }
+
+        function openArticleModal(articleId) {
+            console.log('Opening article modal for ID:', articleId);
+            console.log('Type of ID:', typeof articleId);
+            console.log('Current news array:', currentNews);
+            
+            const article = currentNews.find(a => a.id === articleId);
+            console.log('Found article:', article);
+            
+            if (!article) {
+                console.error('Article not found for ID:', articleId);
+                return;
+            }
+
+            const hasImage = article.image_url && article.image_url.trim() !== '';
+            const modalImage = document.getElementById('modalImage');
+            const articleHeader = document.querySelector('.article-header');
+            
+            if (hasImage) {
+                modalImage.src = article.image_url;
+                modalImage.style.display = 'block';
+                articleHeader.classList.remove('no-image');
+            } else {
+                modalImage.style.display = 'none';
+                articleHeader.classList.add('no-image');
+            }
+            
+            document.getElementById('modalTitle').textContent = article.title;
+            document.getElementById('modalDate').textContent = formatDate(article.created_at);
+            
+            // Format content with line breaks
+            const formattedContent = article.content.replace(/\n/g, '<br><br>');
+            document.getElementById('modalContent').innerHTML = formattedContent;
+            
+            document.getElementById('articleModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeArticleModal() {
+            document.getElementById('articleModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function shareOnX() {
+            const title = document.getElementById('modalTitle').textContent;
+            const tweetText = `Check out this article from Pythenians: "${title}" ${window.location.href}`;
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        function copyArticleLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Article link copied to clipboard!');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeArticleModal();
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-socials">
+                <a href="https://x.com/PytheniansNFT" target="_blank" class="social-link">
+                    <span>𝕏</span>
+                </a>
+                <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="social-link">
+                    <img src="./disc-logo.png" alt="Discord" class="social-logo">
+                </a>
+            </div>
+            <p class="footer-text">© 2024 Pythenians NFT Collection</p>
+        </div>
+    </footer>
+</body>
+</html>

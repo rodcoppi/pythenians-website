@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythenians Gallery</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">
+      <img class="logo" src="https://pythenians.xyz/logo.png" alt="Pythenians Logo">
+    </a>
+    
+    <!-- Desktop Navigation -->
+    <nav class="nav desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="memes.html">Memes</a>
+      <a href="news.html">News</a>
+      <a href="https://magiceden.io/marketplace/pythenians" target="_blank">Buy</a>
+    </nav>
+    
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()">
+    <div class="mobile-menu">
+      <div class="mobile-menu-header">
+        <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="mobile-menu-logo">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="index.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="gallery.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Gallery</span>
+        </a>
+        <a href="memes.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Memes</span>
+        </a>
+        <a href="news.html" onclick="closeMobileMenu()">
+          <span class="nav-text">News</span>
+        </a>
+        <a href="https://magiceden.io/marketplace/pythenians" target="_blank" onclick="closeMobileMenu()">
+          <span class="nav-text">Buy</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobileMenuOverlay');
+      overlay.classList.toggle('active');
+      document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+    }
+
+    function closeMobileMenu() {
+      const overlay = document.getElementById('mobileMenuOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  </script>
+  <div class="main">
+    <div class="sidebar" id="sidebar">
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+        <span class="toggle-icon">←</span>
+      </button>
+      <div class="sidebar-content">
+        <h2>FILTER</h2>
+      <div class="search-box">
+        <input type="text" id="searchById" placeholder="Search by #ID..." onInput="filterNFTs()">
+      </div>
+      <button class="clear-filters" onclick="clearFilters()">Clear All Filters</button>
+      
+      <!-- Active Filters Display -->
+      <div class="active-filters" id="activeFilters" style="display: none;">
+        <div class="active-filters-header">
+          <h4>Active Filters</h4>
+          <span class="active-count" id="activeCount">0</span>
+        </div>
+        <div class="active-filters-list" id="activeFiltersList">
+          <!-- Active filter tags will appear here -->
+        </div>
+      </div>
+      
+      <div class="rarity-legend">
+        <div class="legend-header">
+          <h4>Rarity Guide</h4>
+          <button class="learn-more-btn" onclick="openRarityModal()">Learn More</button>
+        </div>
+        <div class="legend-item">
+          <div class="rarity-indicator mythical mini"></div>
+          <span>Mythical (Top 1%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="rarity-indicator legendary mini"></div>
+          <span>Legendary (Top 5%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="rarity-indicator rare mini"></div>
+          <span>Rare (Top 15%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="rarity-indicator uncommon mini"></div>
+          <span>Uncommon (Top 35%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="rarity-indicator common mini"></div>
+          <span>Common</span>
+        </div>
+      </div>
+      
+      <div id="filters">
+      </div>
+      </div> <!-- Close sidebar-content -->
+    </div>
+    <div class="gallery-container"> <!-- Add this wrapper div -->
+      <div class="gallery-header">
+        <div class="gallery-info" id="galleryInfo">
+          <!-- NFT count will be shown here -->
+        </div>
+        <div class="header-controls">
+          <button class="mobile-filter-btn" id="mobileFilterBtn" onclick="openMobileFilters()">
+            <span class="filter-icon">⚡</span>
+            <span class="filter-text">Filters</span>
+            <span class="active-filter-count" id="mobileFilterCount" style="display: none;">0</span>
+          </button>
+          <div class="sort-controls">
+            <label for="sortSelect">Sort by:</label>
+            <select id="sortSelect" onchange="handleSortChange()">
+              <option value="rarity">Rarity (Rarest First)</option>
+              <option value="rarity-desc">Rarity (Common First)</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="id-asc">ID (Low to High)</option>
+              <option value="id-desc">ID (High to Low)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="gallery" id="nftGrid">
+        <!-- NFT cards will be loaded here -->
+      </div>
+      <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage">Next</button>
+      </div>
+    </div> <!-- Close the wrapper div -->
+  </div>
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <div class="lightbox-content">
+      <div class="lightbox-image-container">
+        <img src="" alt="Lightbox Image">
+      </div>
+      <div class="lightbox-info">
+        <h3 class="lightbox-title"></h3>
+        <div class="lightbox-traits"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-modal" id="previewModal">
+    <h3></h3>
+    <div class="preview-traits"></div>
+  </div>
+
+  <!-- Mobile Filter Drawer -->
+  <div class="mobile-filter-overlay" id="mobileFilterOverlay">
+    <div class="mobile-filter-drawer" id="mobileFilterDrawer">
+      <div class="mobile-filter-header">
+        <h2>FILTERS</h2>
+        <button class="mobile-filter-close" onclick="closeMobileFilters()">×</button>
+      </div>
+      <div class="mobile-filter-content">
+        <!-- Active Filters Display -->
+        <div class="mobile-active-filters" id="mobileActiveFilters" style="display: none;">
+          <div class="active-filters-header">
+            <h4>Active Filters</h4>
+            <span class="active-count" id="mobileActiveCount">0</span>
+          </div>
+          <div class="active-filters-list" id="mobileActiveFiltersList">
+            <!-- Active filter tags will appear here -->
+          </div>
+        </div>
+        
+        <div class="mobile-search-box">
+          <input type="text" id="mobileSearchById" placeholder="Search by #ID..." onInput="mobileFilterNFTs()">
+        </div>
+        
+        <div id="mobileFilters">
+          <!-- Mobile filters will be populated here -->
+        </div>
+      </div>
+      <div class="mobile-filter-actions">
+        <button class="mobile-apply-btn" onclick="applyMobileFilters()">Apply Filters</button>
+        <button class="mobile-clear-btn" onclick="clearMobileFilters()">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rarity Explanation Modal -->
+  <div class="rarity-modal" id="rarityModal">
+    <div class="rarity-modal-content">
+      <button class="modal-close" onclick="closeRarityModal()">×</button>
+      <h2>How Rarity Score Works</h2>
+      
+      <div class="explanation-section">
+        <h3>🔢 Rarity Score Calculation</h3>
+        <p>Our rarity system uses a <strong>1:XXXX ratio format</strong> that shows how rare your NFT is compared to the entire collection.</p>
+        
+        <div class="calculation-example">
+          <h4>Example:</h4>
+          <p><strong>"Rarity Score: 1:500"</strong> means only <strong>1 in every 500 NFTs</strong> has this level of rarity or better.</p>
+        </div>
+      </div>
+
+      <div class="explanation-section">
+        <h3>⚡ How We Calculate It</h3>
+        <ol>
+          <li><strong>Trait Analysis:</strong> We count how often each trait appears in the collection</li>
+          <li><strong>Individual Scores:</strong> Each trait gets a score: <em>Total NFTs ÷ Trait Count</em></li>
+          <li><strong>Combined Score:</strong> We add up all trait scores for the NFT</li>
+          <li><strong>Global Ranking:</strong> NFTs are ranked from rarest to most common</li>
+          <li><strong>Ratio Creation:</strong> We convert rank to the 1:XXXX format</li>
+        </ol>
+      </div>
+
+      <div class="explanation-section">
+        <h3>🎯 Rarity Tiers</h3>
+        <div class="tier-explanations">
+          <div class="tier-item">
+            <div class="rarity-indicator mythical mini"></div>
+            <div>
+              <strong>Mythical (Top 1%)</strong>
+              <span>1:1000+ ratio - Ultra rare, only ~55 NFTs</span>
+            </div>
+          </div>
+          <div class="tier-item">
+            <div class="rarity-indicator legendary mini"></div>
+            <div>
+              <strong>Legendary (Top 5%)</strong>
+              <span>1:200+ ratio - Very rare, ~278 NFTs</span>
+            </div>
+          </div>
+          <div class="tier-item">
+            <div class="rarity-indicator rare mini"></div>
+            <div>
+              <strong>Rare (Top 15%)</strong>
+              <span>1:50+ ratio - Rare finds, ~833 NFTs</span>
+            </div>
+          </div>
+          <div class="tier-item">
+            <div class="rarity-indicator uncommon mini"></div>
+            <div>
+              <strong>Uncommon (Top 35%)</strong>
+              <span>1:10+ ratio - Less common, ~1944 NFTs</span>
+            </div>
+          </div>
+          <div class="tier-item">
+            <div class="rarity-indicator common mini"></div>
+            <div>
+              <strong>Common (65%+)</strong>
+              <span>Below 1:10 ratio - Most frequent traits</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explanation-section">
+        <h3>💡 Pro Tips</h3>
+        <ul>
+          <li><strong>Higher ratios = Rarer NFTs:</strong> 1:5000 is much rarer than 1:10</li>
+          <li><strong>Multiple rare traits:</strong> NFTs with several rare traits get higher scores</li>
+          <li><strong>Dynamic ranking:</strong> Based on the actual collection data, not arbitrary numbers</li>
+          <li><strong>Fair system:</strong> Every trait combination is evaluated equally</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let nfts = [];
+    let originalNfts = []; // Keep original order
+    let traitRarity = {};
+    let currentPage = 1;
+    const itemsPerPage = 30;
+    let currentSort = 'rarity'; // Default sort
+
+    // Show loading skeletons
+    showLoadingSkeletons();
+
+    fetch('pythenians_all_nfts.json')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log(`Loaded ${data.length} NFTs from JSON file`);
+        nfts = data.filter(nft => nft.image && nft.name);
+        originalNfts = [...nfts]; // Save original order
+        console.log(`Filtered to ${nfts.length} valid NFTs`);
+        
+        // Calculate trait rarity
+        calculateTraitRarity(nfts);
+        
+        generateFilters(nfts);
+        updateGalleryInfo(nfts.length);
+        renderNFTs(nfts);
+      })
+      .catch(error => {
+        console.error('Error loading NFT data:', error);
+        document.getElementById('nftGrid').innerHTML = '<p style="color: red; text-align: center;">Error loading NFT data. Please make sure you are serving this page through a web server.</p>';
+      });
+
+    function showLoadingSkeletons() {
+        const grid = document.getElementById('nftGrid');
+        grid.innerHTML = '';
+        
+        // Show 12 skeleton cards
+        for (let i = 0; i < 12; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.innerHTML = `
+                <div class="skeleton-image"></div>
+                <div class="skeleton-text"></div>
+            `;
+            grid.appendChild(skeleton);
+        }
+    }
+
+    function calculateTraitRarity(nfts) {
+        const traitCounts = {};
+        const totalNFTs = nfts.length;
+        
+        // Count occurrences of each trait
+        nfts.forEach(nft => {
+            for (const [traitType, traitValue] of Object.entries(nft.traits || {})) {
+                if (!traitCounts[traitType]) traitCounts[traitType] = {};
+                if (!traitCounts[traitType][traitValue]) traitCounts[traitType][traitValue] = 0;
+                traitCounts[traitType][traitValue]++;
+            }
+        });
+        
+        // Calculate rarity percentages and scores
+        traitRarity = {};
+        for (const [traitType, values] of Object.entries(traitCounts)) {
+            traitRarity[traitType] = {};
+            for (const [traitValue, count] of Object.entries(values)) {
+                const percentage = (count / totalNFTs) * 100;
+                traitRarity[traitType][traitValue] = {
+                    count: count,
+                    percentage: percentage.toFixed(1),
+                    // Rarity score: lower percentage = higher score
+                    score: totalNFTs / count
+                };
+            }
+        }
+        
+        // Calculate total rarity score for each NFT
+        nfts.forEach(nft => {
+            let totalScore = 0;
+            let traitCount = 0;
+            
+            for (const [traitType, traitValue] of Object.entries(nft.traits || {})) {
+                const traitData = traitRarity[traitType]?.[traitValue];
+                if (traitData) {
+                    totalScore += traitData.score;
+                    traitCount++;
+                }
+            }
+            
+            nft.rawRarityScore = totalScore;
+            nft.averageRarityScore = traitCount > 0 ? totalScore / traitCount : 0;
+        });
+        
+        // Sort NFTs by raw rarity score (highest = rarest)
+        nfts.sort((a, b) => b.rawRarityScore - a.rawRarityScore);
+        
+        // Add rarity rank and calculate ratio-based score (1:XXXX)
+        nfts.forEach((nft, index) => {
+            nft.rarityRank = index + 1;
+            
+            // Calculate rarity ratio (1 in X NFTs has this rarity or better)
+            const ratio = Math.round(nfts.length / nft.rarityRank);
+            nft.rarityRatio = Math.max(1, ratio); // Ensure minimum of 1
+            nft.rarityScore = `1:${nft.rarityRatio}`;
+        });
+        
+        console.log('Trait rarity and scores calculated:', traitRarity);
+        console.log('Top 5 rarest NFTs:', nfts.slice(0, 5).map(n => ({
+            name: n.name, 
+            rarityScore: n.rarityScore,
+            rank: n.rarityRank,
+            ratio: n.rarityRatio
+        })));
+    }
+
+    function getRarityClass(traitType, traitValue) {
+        const rarity = traitRarity[traitType]?.[traitValue];
+        if (!rarity) return 'common';
+        
+        const percentage = parseFloat(rarity.percentage);
+        if (percentage < 5) return 'legendary';
+        if (percentage < 15) return 'rare';
+        if (percentage < 30) return 'uncommon';
+        return 'common';
+    }
+
+    function renderNFTs(filtered) {
+        const grid = document.getElementById('nftGrid');
+        grid.innerHTML = '';
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = filtered.slice(start, end);
+
+        pageItems.forEach((nft, index) => {
+            const card = document.createElement('div');
+            card.className = 'nft-card';
+            
+            // Get overall rarity classification
+            const overallRarityClass = getRarityClassFromRank(nft.rarityRank, nfts.length);
+            
+            card.innerHTML = `
+                <div class="rarity-indicator ${overallRarityClass}"></div>
+                <img src="${nft.image}" alt="${nft.name}" />
+                <p>${nft.name}</p>
+            `;
+            
+            // Add click event for lightbox
+            const img = card.querySelector('img');
+            img.addEventListener('click', () => openLightbox(nft));
+            
+            // Add hover preview
+            card.addEventListener('mouseenter', (e) => showPreview(e, nft));
+            card.addEventListener('mouseleave', hidePreview);
+            
+            // Staggered animation
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('fade-in');
+            
+            grid.appendChild(card);
+        });
+
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${Math.ceil(filtered.length / itemsPerPage)}`;
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = end >= filtered.length;
+
+        window.filteredNFTs = filtered;
+        updateGalleryInfo(filtered.length);
+    }
+
+    function getRarityClassFromScore(score) {
+        if (score < 5) return 'legendary';
+        if (score < 15) return 'rare';  
+        if (score < 30) return 'uncommon';
+        return 'common';
+    }
+
+    function getRarityClassFromRank(rank, totalNFTs) {
+        const percentage = (rank / totalNFTs) * 100;
+        if (percentage <= 1) return 'mythical';      // Top 1%
+        if (percentage <= 5) return 'legendary';     // Top 5%
+        if (percentage <= 15) return 'rare';         // Top 15%
+        if (percentage <= 35) return 'uncommon';     // Top 35%
+        return 'common';                             // Rest
+    }
+
+    function formatRarityScore(score) {
+        return score; // Now it's already formatted as "1:XXX"
+    }
+
+    function getRarityScoreColor(ratio) {
+        if (ratio >= 1000) return 'mythical';   // 1:1000+ = mythical
+        if (ratio >= 200) return 'legendary';   // 1:200+ = legendary
+        if (ratio >= 50) return 'rare';         // 1:50+ = rare
+        if (ratio >= 10) return 'uncommon';     // 1:10+ = uncommon
+        return 'common';                        // Less than 1:10 = common
+    }
+
+    function updateGalleryInfo(count) {
+        const galleryInfo = document.getElementById('galleryInfo');
+        galleryInfo.textContent = `Showing ${count} NFTs`;
+    }
+
+    function sortNFTs(nftArray, sortType) {
+        const sorted = [...nftArray];
+        
+        switch(sortType) {
+            case 'rarity':
+                // Rarest first (lowest rank number)
+                return sorted.sort((a, b) => a.rarityRank - b.rarityRank);
+            
+            case 'rarity-desc':
+                // Common first (highest rank number)
+                return sorted.sort((a, b) => b.rarityRank - a.rarityRank);
+            
+            case 'name-asc':
+                return sorted.sort((a, b) => a.name.localeCompare(b.name));
+            
+            case 'name-desc':
+                return sorted.sort((a, b) => b.name.localeCompare(a.name));
+            
+            case 'id-asc':
+                return sorted.sort((a, b) => a.id - b.id);
+            
+            case 'id-desc':
+                return sorted.sort((a, b) => b.id - a.id);
+            
+            default:
+                return sorted;
+        }
+    }
+
+    function handleSortChange() {
+        const sortSelect = document.getElementById('sortSelect');
+        currentSort = sortSelect.value;
+        currentPage = 1; // Reset to first page
+        
+        // Apply sort to current filtered results
+        const currentFiltered = window.filteredNFTs || nfts;
+        const sortedNFTs = sortNFTs(currentFiltered, currentSort);
+        renderNFTs(sortedNFTs);
+    }
+
+    function generateFilters(nfts) {
+      const traits = {};
+      nfts.forEach(nft => {
+        for (let [type, value] of Object.entries(nft.traits || {})) {
+          if (!traits[type]) traits[type] = new Set();
+          traits[type].add(value);
+        }
+      });
+
+      const container = document.getElementById('filters');
+      for (const [type, values] of Object.entries(traits)) {
+        const details = document.createElement('details');
+        details.className = 'filter-group';
+        const summary = document.createElement('summary');
+        summary.textContent = type;
+        details.appendChild(summary);
+
+        // Create options container
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'filter-options';
+        
+        Array.from(values).sort().forEach(value => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" value="${value}" onchange="filterNFTs()"><span>${value}</span>`;
+          optionsDiv.appendChild(label);
+        });
+        
+        details.appendChild(optionsDiv);
+
+        container.appendChild(details);
+      }
+    }
+
+    function clearFilters() {
+        document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.getElementById('searchById').value = '';
+        currentPage = 1;
+        
+        // Hide active filters immediately
+        document.getElementById('activeFilters').style.display = 'none';
+        
+        filterNFTs();
+    }
+
+    function updateActiveFilters() {
+        const activeFiltersContainer = document.getElementById('activeFilters');
+        const activeFiltersList = document.getElementById('activeFiltersList');
+        const activeCount = document.getElementById('activeCount');
+        
+        // Clear existing tags
+        activeFiltersList.innerHTML = '';
+        
+        let totalFilters = 0;
+        
+        // Add search filter if active
+        const searchText = document.getElementById('searchById').value.trim();
+        if (searchText) {
+            const searchTag = createFilterTag('Search', searchText, () => {
+                document.getElementById('searchById').value = '';
+                filterNFTs();
+            }, 'search-filter-tag');
+            activeFiltersList.appendChild(searchTag);
+            totalFilters++;
+        }
+        
+        // Add trait filters
+        document.querySelectorAll('.filter-group').forEach(group => {
+            const type = group.querySelector('summary').textContent;
+            const selected = [...group.querySelectorAll('input:checked')];
+            
+            selected.forEach(checkbox => {
+                const value = checkbox.value;
+                const tag = createFilterTag(type, value, () => {
+                    checkbox.checked = false;
+                    filterNFTs();
+                });
+                activeFiltersList.appendChild(tag);
+                totalFilters++;
+            });
+        });
+        
+        // Show/hide active filters section
+        if (totalFilters > 0) {
+            activeFiltersContainer.style.display = 'block';
+            activeCount.textContent = totalFilters;
+        } else {
+            activeFiltersContainer.style.display = 'none';
+        }
+    }
+    
+    function createFilterTag(category, value, removeCallback, extraClass = '') {
+        const tag = document.createElement('div');
+        tag.className = `filter-tag ${extraClass}`;
+        
+        tag.innerHTML = `
+            <span class="filter-tag-category">${category}:</span>
+            <span class="filter-tag-value">${value}</span>
+            <button class="filter-tag-remove" type="button">×</button>
+        `;
+        
+        const removeBtn = tag.querySelector('.filter-tag-remove');
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeCallback();
+        });
+        
+        return tag;
+    }
+
+    function filterNFTs() {
+        const filters = {};
+        document.querySelectorAll('.filter-group').forEach(group => {
+            const type = group.querySelector('summary').textContent;
+            const selected = [...group.querySelectorAll('input:checked')].map(i => i.value);
+            if (selected.length > 0) filters[type] = selected;
+        });
+
+        const searchText = document.getElementById('searchById').value.toLowerCase().trim();
+        
+        const filtered = nfts.filter(nft => {
+            // Check ID search
+            if (searchText && !nft.name.toLowerCase().includes(searchText)) {
+                return false;
+            }
+            // Check other filters
+            return Object.entries(filters).every(([type, values]) => 
+                values.includes(nft.traits?.[type])
+            );
+        });
+        
+        // Apply current sort to filtered results
+        const sortedFiltered = sortNFTs(filtered, currentSort);
+        
+        // Update active filters display
+        updateActiveFilters();
+        
+        currentPage = 1;
+        renderNFTs(sortedFiltered);
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderNFTs(window.filteredNFTs || nfts);
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+      currentPage++;
+      renderNFTs(window.filteredNFTs || nfts);
+    });
+
+    function openLightbox(nft) {
+        console.log('Opening lightbox for NFT:', nft);
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+        const lightboxTitle = lightbox.querySelector('.lightbox-title');
+        const lightboxTraits = lightbox.querySelector('.lightbox-traits');
+        
+        console.log('Lightbox elements found:', {
+            lightbox,
+            lightboxImg, 
+            lightboxTitle,
+            lightboxTraits
+        });
+        
+        // Set image and title with rarity info
+        lightboxImg.src = nft.image;
+        const rarityClass = getRarityClassFromRank(nft.rarityRank, nfts.length);
+        const scoreColor = getRarityScoreColor(nft.rarityRatio);
+        lightboxTitle.innerHTML = `
+            ${nft.name}
+            <div class="lightbox-rarity-info">
+                <span class="lightbox-rarity-score ${scoreColor}">Rarity Score: ${formatRarityScore(nft.rarityScore)}</span>
+                <span class="lightbox-rarity-rank">Global Rank: #${nft.rarityRank} of ${nfts.length}</span>
+            </div>
+        `;
+        
+        // Build traits display
+        lightboxTraits.innerHTML = '';
+        console.log('NFT traits:', nft.traits);
+        
+        if (nft.traits) {
+            Object.entries(nft.traits).forEach(([type, value]) => {
+                const rarity = traitRarity[type]?.[value];
+                const rarityClass = getRarityClass(type, value);
+                
+                const traitDiv = document.createElement('div');
+                traitDiv.className = 'lightbox-trait';
+                traitDiv.innerHTML = `
+                    <span><strong>${type}:</strong> ${value}</span>
+                    <span class="trait-rarity ${rarityClass}">
+                        ${rarity ? rarity.percentage + '%' : '—'}
+                    </span>
+                `;
+                lightboxTraits.appendChild(traitDiv);
+                console.log('Added trait:', type, value);
+            });
+        } else {
+            lightboxTraits.innerHTML = '<p>No traits available</p>';
+        }
+        
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close lightbox when clicking outside the image
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLightbox();
+        }
+    });
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+
+    // Preview Modal Functions
+    function showPreview(event, nft) {
+        const modal = document.getElementById('previewModal');
+        const title = modal.querySelector('h3');
+        const traitsContainer = modal.querySelector('.preview-traits');
+        
+        // Update modal content (no image in hover)
+        const rarityClass = getRarityClassFromRank(nft.rarityRank, nfts.length);
+        const scoreColor = getRarityScoreColor(nft.rarityRatio);
+        title.innerHTML = `
+            ${nft.name}
+            <div class="preview-rarity-info">
+                <span class="preview-rarity-score ${scoreColor}">Rarity Score: ${formatRarityScore(nft.rarityScore)}</span>
+                <span class="preview-rarity-rank">Rank #${nft.rarityRank}</span>
+            </div>
+        `;
+        
+        // Build traits display
+        traitsContainer.innerHTML = '';
+        Object.entries(nft.traits || {}).forEach(([type, value]) => {
+            const rarity = traitRarity[type]?.[value];
+            const rarityClass = getRarityClass(type, value);
+            
+            const traitDiv = document.createElement('div');
+            traitDiv.className = 'preview-trait';
+            traitDiv.innerHTML = `
+                <span><strong>${type}:</strong> ${value}</span>
+                <span class="trait-rarity ${rarityClass}">
+                    ${rarity ? rarity.percentage + '%' : '—'}
+                </span>
+            `;
+            traitsContainer.appendChild(traitDiv);
+        });
+        
+        // Position modal near cursor
+        const rect = event.target.getBoundingClientRect();
+        modal.style.left = Math.min(rect.right + 20, window.innerWidth - 320) + 'px';
+        modal.style.top = Math.max(rect.top - 20, 20) + 'px';
+        
+        // Show modal
+        modal.classList.add('active');
+    }
+
+    function hidePreview() {
+        const modal = document.getElementById('previewModal');
+        modal.classList.remove('active');
+    }
+
+    // Sidebar Toggle Functions
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleIcon = document.querySelector('.toggle-icon');
+        
+        sidebar.classList.toggle('collapsed');
+        
+        if (sidebar.classList.contains('collapsed')) {
+            toggleIcon.textContent = '→';
+            toggleIcon.setAttribute('title', 'Expand Filters');
+        } else {
+            toggleIcon.textContent = '←';
+            toggleIcon.setAttribute('title', 'Collapse Filters');
+        }
+    }
+
+    // Rarity Modal Functions
+    function openRarityModal() {
+        const modal = document.getElementById('rarityModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeRarityModal() {
+        const modal = document.getElementById('rarityModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside content
+    document.getElementById('rarityModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeRarityModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const rarityModal = document.getElementById('rarityModal');
+            if (rarityModal.classList.contains('active')) {
+                closeRarityModal();
+            }
+            const mobileOverlay = document.getElementById('mobileFilterOverlay');
+            if (mobileOverlay.classList.contains('active')) {
+                closeMobileFilters();
+            }
+        }
+    });
+
+    // Mobile Filter Functions
+    function openMobileFilters() {
+        const overlay = document.getElementById('mobileFilterOverlay');
+        const mobileFilters = document.getElementById('mobileFilters');
+        
+        // Populate mobile filters if empty
+        if (mobileFilters.children.length === 0) {
+            populateMobileFilters();
+        }
+        
+        // Sync current filter state
+        syncMobileFilters();
+        
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileFilters() {
+        const overlay = document.getElementById('mobileFilterOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    function populateMobileFilters() {
+        const traits = {};
+        nfts.forEach(nft => {
+            for (let [type, value] of Object.entries(nft.traits || {})) {
+                if (!traits[type]) traits[type] = new Set();
+                traits[type].add(value);
+            }
+        });
+        
+        const mobileContainer = document.getElementById('mobileFilters');
+        for (const [type, values] of Object.entries(traits)) {
+            const details = document.createElement('details');
+            details.className = 'filter-group';
+            const summary = document.createElement('summary');
+            summary.textContent = type;
+            details.appendChild(summary);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'filter-options';
+            
+            Array.from(values).sort().forEach(value => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" value="${value}" onchange="mobileFilterNFTs()"><span>${value}</span>`;
+                optionsDiv.appendChild(label);
+            });
+            
+            details.appendChild(optionsDiv);
+            mobileContainer.appendChild(details);
+        }
+    }
+    
+    function syncMobileFilters() {
+        // Sync search
+        const desktopSearch = document.getElementById('searchById').value;
+        document.getElementById('mobileSearchById').value = desktopSearch;
+        
+        // Sync filter checkboxes
+        const desktopGroups = document.querySelectorAll('.sidebar .filter-group');
+        const mobileGroups = document.querySelectorAll('#mobileFilters .filter-group');
+        
+        desktopGroups.forEach((desktopGroup, index) => {
+            const mobileGroup = mobileGroups[index];
+            if (mobileGroup) {
+                const desktopCheckboxes = desktopGroup.querySelectorAll('input[type="checkbox"]');
+                const mobileCheckboxes = mobileGroup.querySelectorAll('input[type="checkbox"]');
+                
+                desktopCheckboxes.forEach((desktopCheckbox, checkIndex) => {
+                    const mobileCheckbox = mobileCheckboxes[checkIndex];
+                    if (mobileCheckbox) {
+                        mobileCheckbox.checked = desktopCheckbox.checked;
+                    }
+                });
+            }
+        });
+        
+        // Update mobile active filters display
+        updateMobileActiveFilters();
+    }
+    
+    function mobileFilterNFTs() {
+        // Real-time filtering option
+        updateMobileActiveFilters();
+    }
+    
+    function updateMobileActiveFilters() {
+        const activeFiltersContainer = document.getElementById('mobileActiveFilters');
+        const activeFiltersList = document.getElementById('mobileActiveFiltersList');
+        const activeCount = document.getElementById('mobileActiveCount');
+        const mobileFilterCount = document.getElementById('mobileFilterCount');
+        
+        // Clear existing tags
+        activeFiltersList.innerHTML = '';
+        let totalFilters = 0;
+        
+        // Add search filter if active
+        const searchText = document.getElementById('mobileSearchById').value.trim();
+        if (searchText) {
+            const searchTag = createFilterTag('Search', searchText, () => {
+                document.getElementById('mobileSearchById').value = '';
+                updateMobileActiveFilters();
+            }, 'search-filter-tag');
+            activeFiltersList.appendChild(searchTag);
+            totalFilters++;
+        }
+        
+        // Add trait filters
+        document.querySelectorAll('#mobileFilters .filter-group').forEach(group => {
+            const type = group.querySelector('summary').textContent;
+            const selected = [...group.querySelectorAll('input:checked')];
+            
+            selected.forEach(checkbox => {
+                const value = checkbox.value;
+                const tag = createFilterTag(type, value, () => {
+                    checkbox.checked = false;
+                    updateMobileActiveFilters();
+                });
+                activeFiltersList.appendChild(tag);
+                totalFilters++;
+            });
+        });
+        
+        // Show/hide active filters section
+        if (totalFilters > 0) {
+            activeFiltersContainer.style.display = 'block';
+            activeCount.textContent = totalFilters;
+            mobileFilterCount.textContent = totalFilters;
+            mobileFilterCount.style.display = 'block';
+        } else {
+            activeFiltersContainer.style.display = 'none';
+            mobileFilterCount.style.display = 'none';
+        }
+    }
+    
+    function applyMobileFilters() {
+        // Sync mobile filters to desktop
+        const mobileSearch = document.getElementById('mobileSearchById').value;
+        document.getElementById('searchById').value = mobileSearch;
+        
+        // Sync checkboxes
+        const desktopGroups = document.querySelectorAll('.sidebar .filter-group');
+        const mobileGroups = document.querySelectorAll('#mobileFilters .filter-group');
+        
+        mobileGroups.forEach((mobileGroup, index) => {
+            const desktopGroup = desktopGroups[index];
+            if (desktopGroup) {
+                const mobileCheckboxes = mobileGroup.querySelectorAll('input[type="checkbox"]');
+                const desktopCheckboxes = desktopGroup.querySelectorAll('input[type="checkbox"]');
+                
+                mobileCheckboxes.forEach((mobileCheckbox, checkIndex) => {
+                    const desktopCheckbox = desktopCheckboxes[checkIndex];
+                    if (desktopCheckbox) {
+                        desktopCheckbox.checked = mobileCheckbox.checked;
+                    }
+                });
+            }
+        });
+        
+        // Apply filters and close mobile drawer
+        filterNFTs();
+        closeMobileFilters();
+    }
+    
+    function clearMobileFilters() {
+        // Clear mobile filters
+        document.querySelectorAll('#mobileFilters input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.getElementById('mobileSearchById').value = '';
+        
+        // Update display
+        updateMobileActiveFilters();
+        
+        // Also apply to desktop if real-time is enabled
+        clearFilters();
+    }
+    
+    // Close mobile overlay when clicking outside drawer
+    document.getElementById('mobileFilterOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeMobileFilters();
+        }
+    });
+
+  </script>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-socials">
+        <a href="https://x.com/PytheniansNFT" target="_blank" class="social-link">
+          <span>𝕏</span>
+        </a>
+        <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="social-link">
+          <img src="./disc-logo.png" alt="Discord" class="social-logo">
+        </a>
+      </div>
+      <p class="footer-text">© 2024 Pythenians NFT Collection</p>
+    </div>
+  </footer>
+</body>
+</html>

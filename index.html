@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythenians</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">
+    <a href="index.html">
+      <img class="logo" src="https://pythenians.xyz/logo.png" alt="Pythenians Logo">
+    </a>
+    
+    <!-- Desktop Navigation -->
+    <nav class="nav desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="memes.html">Memes</a>
+      <a href="news.html">News</a>
+      <a href="https://magiceden.io/marketplace/pythenians" target="_blank">Buy</a>
+    </nav>
+    
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()">
+    <div class="mobile-menu">
+      <div class="mobile-menu-header">
+        <img src="https://pythenians.xyz/logo.png" alt="Pythenians Logo" class="mobile-menu-logo">
+        <button class="mobile-menu-close" onclick="closeMobileMenu()">×</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="index.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="gallery.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Gallery</span>
+        </a>
+        <a href="memes.html" onclick="closeMobileMenu()">
+          <span class="nav-text">Memes</span>
+        </a>
+        <a href="news.html" onclick="closeMobileMenu()">
+          <span class="nav-text">News</span>
+        </a>
+        <a href="https://magiceden.io/marketplace/pythenians" target="_blank" onclick="closeMobileMenu()">
+          <span class="nav-text">Buy</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobileMenuOverlay');
+      overlay.classList.toggle('active');
+      document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : 'auto';
+    }
+
+    function closeMobileMenu() {
+      const overlay = document.getElementById('mobileMenuOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  </script>
+
+  <div class="home">
+    <!-- Floating NFTs Background -->
+    <div class="floating-nfts">
+      <img src="https://ipfs.pythenians.xyz/nft/ea0d8e272c37d248f1731f2ec0a1bfd714dff1af.png" class="floating-nft" alt="Rare NFT">
+      <img src="https://ipfs.pythenians.xyz/nft/8f7a2decdde0ac1aa34c74d3ffdbdb33ade26110.png" class="floating-nft" alt="Rare NFT">
+      <img src="https://ipfs.pythenians.xyz/nft/cb55d66ab694b6a500cae7b00d9088a9b35d7e84.png" class="floating-nft" alt="Rare NFT">
+      <img src="https://ipfs.pythenians.xyz/nft/3e0a10c2428c796d987a39fe9ba6b3fd5201bcc4.png" class="floating-nft" alt="Rare NFT">
+      <img src="https://ipfs.pythenians.xyz/nft/7f9c2f8a6b1c7f042e4c477ed1fdcc74be9418e3.png" class="floating-nft" alt="Rare NFT">
+      <img src="https://ipfs.pythenians.xyz/nft/bea150d9f2db498186c2836cbf5f4ffbc2eb3a30.png" class="floating-nft" alt="Rare NFT">
+    </div>
+    
+    <img src="https://pythenians.xyz/logo.png" alt="Centered Pythenians Logo">
+    <div class="action-buttons">
+      <div class="top-buttons">
+        <a href="https://magiceden.io/marketplace/pythenians" target="_blank" class="action-btn collection-btn btn-1">
+          <img src="./me-logo.png" alt="MagicEden" class="me-logo">
+          <span>Check Collection</span>
+        </a>
+        <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="action-btn community-btn btn-2">
+          <img src="./disc-logo.png" alt="Discord" class="disc-logo">
+          <span>Join Community</span>
+        </a>
+      </div>
+      <a href="#" class="action-btn migration-btn btn-3">
+        <img src="./pikenians.jpg" alt="Pikenians" class="pikenians-logo">
+        <span>Pikenians/Undeads Migration</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-socials">
+        <a href="https://x.com/PytheniansNFT" target="_blank" class="social-link">
+          <span>𝕏</span>
+        </a>
+        <a href="https://discord.com/invite/HJXBDagZTa" target="_blank" class="social-link">
+          <img src="./disc-logo.png" alt="Discord" class="social-logo">
+        </a>
+      </div>
+      <p class="footer-text">© 2024 Pythenians NFT Collection</p>
+    </div>
+  </footer>
+</body>
+</html>
