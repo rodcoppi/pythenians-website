@@ -3737,7 +3737,7 @@ body {
     100% { background-position: 200% 0; }
 }
 
-/* Lightbox styles */
+/* Gallery Lightbox styles */
 .lightbox {
     display: none;
     position: fixed;
@@ -3759,19 +3759,27 @@ body {
 
 .lightbox-content {
     display: flex;
-    gap: 20px;
+    gap: 30px;
     max-width: 95vw;
     max-height: 90vh;
     align-items: flex-start;
+    background: rgba(26, 26, 51, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(197, 49, 234, 0.2);
 }
 
 .lightbox-image-container {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .lightbox img {
-    max-width: 600px;
-    max-height: 80vh;
+    max-width: 500px;
+    max-height: 70vh;
     width: auto;
     height: auto;
     border-radius: 15px;
@@ -3781,13 +3789,15 @@ body {
 }
 
 .lightbox-info {
-
-    padding: 18px;
-    max-width: 320px;
-    max-height: 80vh;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 350px;
+    max-height: 70vh;
     overflow-y: auto;
-    min-width: 280px;
-    flex-shrink: 1;
+    min-width: 300px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Lightbox info custom scrollbar */
@@ -3907,49 +3917,85 @@ body {
 @media (max-width: 768px) {
     .lightbox-content {
         flex-direction: column;
-        gap: 15px;
-        max-height: 90vh;
+        gap: 20px;
+        max-height: 85vh;
+        max-width: 90vw;
+        padding: 20px;
+        margin: 0 auto;
+    }
+    
+    .lightbox-image-container {
+        align-self: center;
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
     
     .lightbox img {
-        max-width: 90vw;
-        max-height: 50vh;
-        align-self: center;
+        max-width: 100%;
+        max-height: 40vh;
+        width: auto;
+        height: auto;
     }
     
     .lightbox-info {
-        max-width: 90vw;
+        max-width: 100%;
         max-height: 35vh;
-        padding: 15px;
+        min-width: unset;
+        padding: 20px;
         align-self: center;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .lightbox-title {
         font-size: 1.2rem;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
     }
     
     .lightbox-trait {
-        padding: 6px 10px;
-        font-size: 0.85rem;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .lightbox-rarity-info {
+        margin-bottom: 15px;
     }
 }
 
 .lightbox-close {
-    position: absolute;
-    top: 15px; /* Adjusted position */
-    right: 15px; /* Adjusted position */
+    position: fixed;
+    top: 30px;
+    right: 30px;
     color: var(--text);
-    font-size: 2rem; /* Made slightly larger */
+    font-size: 2rem;
     cursor: pointer;
-    background: none;
+    background: rgba(0, 0, 0, 0.7);
     border: none;
-    padding: 5px; /* Smaller padding */
-    line-height: 1; /* Ensure tight fit */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 1001;
+    transition: all 0.3s ease;
 }
 
 .lightbox-close:hover {
-    color: var(--highlight);
+    background: rgba(197, 49, 234, 0.8);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .lightbox-close {
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+    }
 }
 
 
